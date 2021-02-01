@@ -440,20 +440,20 @@ function RaidSummon:NameListButton_PreClick(source, button)
       end
 
       if self.db.char.zone and self.db.char.whisper and zonetext and subzonetext then
-        SendChatMessage(L["SummonAnnounceRZS"](targetname, zonetext, subzonetext), "RAID")
-        SendChatMessage(L["SummonAnnounceWZS"](zonetext, subzonetext), "WHISPER", nil, targetname)
+        -- SendChatMessage(L["SummonAnnounceRZS"](targetname, zonetext, subzonetext), "RAID")
+        -- SendChatMessage(L["SummonAnnounceWZS"](zonetext, subzonetext), "WHISPER", nil, targetname)
       elseif self.db.char.zone and self.db.char.whisper and zonetext and not subzonetext then
-        SendChatMessage(L["SummonAnnounceRZ"](targetname, zonetext), "RAID")
-        SendChatMessage(L["SummonAnnounceWZ"](zonetext), "WHISPER", nil, targetname)
+        -- SendChatMessage(L["SummonAnnounceRZ"](targetname, zonetext), "RAID")
+        -- SendChatMessage(L["SummonAnnounceWZ"](zonetext), "WHISPER", nil, targetname)
       elseif self.db.char.zone and not self.db.char.whisper and zonetext and subzonetext then
-        SendChatMessage(L["SummonAnnounceRZS"](targetname, zonetext, subzonetext), "RAID")
+        -- SendChatMessage(L["SummonAnnounceRZS"](targetname, zonetext, subzonetext), "RAID")
       elseif self.db.char.zone and not self.db.char.whisper and zonetext and not subzonetext then
-        SendChatMessage(L["SummonAnnounceRZ"](targetname, zonetext), "RAID")
+        -- SendChatMessage(L["SummonAnnounceRZ"](targetname, zonetext), "RAID")
       elseif not self.db.char.zone and self.db.char.whisper then
-        SendChatMessage(L["SummonAnnounceR"](targetname), "RAID")
-        SendChatMessage(L["SummonAnnounceW"], "WHISPER", nil, targetname)
+        -- SendChatMessage(L["SummonAnnounceR"](targetname), "RAID")
+        -- SendChatMessage(L["SummonAnnounceW"], "WHISPER", nil, targetname)
       elseif not self.db.char.zone and not self.db.char.whisper then
-        SendChatMessage(L["SummonAnnounceR"](targetname), "RAID")
+        -- SendChatMessage(L["SummonAnnounceR"](targetname), "RAID")
       else
         print(L["SummonAnnounceError"])
       end
