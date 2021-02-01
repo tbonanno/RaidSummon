@@ -183,6 +183,7 @@ function RaidSummon:OnEnable()
   self:RegisterEvent("CHAT_MSG_RAID_LEADER", "msgParser")
   self:RegisterEvent("CHAT_MSG_SAY", "msgParser")
   self:RegisterEvent("CHAT_MSG_YELL", "msgParser")
+  self:RegisterEvent("CHAT_MSG_GUILD", "msgParser")
   self:RegisterEvent("CHAT_MSG_WHISPER", "msgParser")
 
   --Right Click Hook
@@ -246,20 +247,20 @@ function RaidSummon:OnInitialize()
   self:RegisterComm(COMM_PREFIX_ADD_ALL) --via AddAll function
 
   --check if keywords have been initialized
-  if (not self.db.profile.keywordsinit) then
-    self.db.profile.keywords = { "^123$", "^sum", "^port" }
-    self.db.profile.keywordsinit = true
+  if (not self.db.char.keywordsinit) then
+    self.db.char.keywords = { "^123$", "^sum", "^port" }
+    self.db.char.keywordsinit = true
   end
 end
 
 --Handle CHAT_MSG Events here
 function RaidSummon:msgParser(eventName,...)
-  if eventName == "CHAT_MSG_SAY" or eventName == "CHAT_MSG_RAID" or eventName == "CHAT_MSG_PARTY" or eventName == "CHAT_MSG_RAID_LEADER" or eventName == "CHAT_MSG_YELL" or eventName == "CHAT_MSG_WHISPER" then
+  if eventName == "CHAT_MSG_SAY" or eventName == "CHAT_MSG_RAID" or eventName == "CHAT_MSG_PARTY" or eventName == "CHAT_MSG_RAID_LEADER" or eventName == "CHAT_MSG_YELL" or eventName == "CHAT_MSG_GUILD" or eventName == "CHAT_MSG_WHISPER" then
     local text, playerName, languageName, channelName, playerName2   = ...
 
-    for i, v in ipairs(self.db.profile.keywords) do
+    for i, v in ipairs(self.db.char.keywords) do
       if string.find(text, v) then
-        RaidSummon:SendCommMessage(COMM_PREFIX_ADD, playerName2, "RAID")
+        RaidSummon:SendCommMessage(COMM_PREFIX_ADD, playerName2, "SAY")
       end
     end
   end
@@ -298,7 +299,7 @@ function RaidSummon:OnCommReceived(prefix, message, distribution, sender)
             if message == RaidMembersDBvalue.rName then
               table.insert(RaidSummonSyncDB, message)
               RaidSummon:UpdateList()
-              if self.db.profile.flashwindow then
+              if self.db.char.flashwindow then
                 FlashClientIcon()
               end
             end
@@ -317,7 +318,7 @@ function RaidSummon:OnCommReceived(prefix, message, distribution, sender)
               table.insert(RaidSummonSyncDB, message)
               print(L["MemberAdded"](message,sender))
               RaidSummon:UpdateList()
-              if self.db.profile.flashwindow then
+              if self.db.char.flashwindow then
                 FlashClientIcon()
               end
             end
@@ -426,11 +427,6 @@ function RaidSummon:NameListButton_PreClick(source, button)
         return
       end
 
-      if UnitPower("player") < 300 then
-        print(L["NotEnoughMana"])
-        return
-      end
-
       if GetZoneText() == "" then
         zonetext = nil
       else
@@ -443,20 +439,20 @@ function RaidSummon:NameListButton_PreClick(source, button)
         subzonetext = GetSubZoneText()
       end
 
-      if self.db.profile.zone and self.db.profile.whisper and zonetext and subzonetext then
+      if self.db.char.zone and self.db.char.whisper and zonetext and subzonetext then
         SendChatMessage(L["SummonAnnounceRZS"](targetname, zonetext, subzonetext), "RAID")
         SendChatMessage(L["SummonAnnounceWZS"](zonetext, subzonetext), "WHISPER", nil, targetname)
-      elseif self.db.profile.zone and self.db.profile.whisper and zonetext and not subzonetext then
+      elseif self.db.char.zone and self.db.char.whisper and zonetext and not subzonetext then
         SendChatMessage(L["SummonAnnounceRZ"](targetname, zonetext), "RAID")
         SendChatMessage(L["SummonAnnounceWZ"](zonetext), "WHISPER", nil, targetname)
-      elseif self.db.profile.zone and not self.db.profile.whisper and zonetext and subzonetext then
+      elseif self.db.char.zone and not self.db.char.whisper and zonetext and subzonetext then
         SendChatMessage(L["SummonAnnounceRZS"](targetname, zonetext, subzonetext), "RAID")
-      elseif self.db.profile.zone and not self.db.profile.whisper and zonetext and not subzonetext then
+      elseif self.db.char.zone and not self.db.char.whisper and zonetext and not subzonetext then
         SendChatMessage(L["SummonAnnounceRZ"](targetname, zonetext), "RAID")
-      elseif not self.db.profile.zone and self.db.profile.whisper then
+      elseif not self.db.char.zone and self.db.char.whisper then
         SendChatMessage(L["SummonAnnounceR"](targetname), "RAID")
         SendChatMessage(L["SummonAnnounceW"], "WHISPER", nil, targetname)
-      elseif not self.db.profile.zone and not self.db.profile.whisper then
+      elseif not self.db.char.zone and not self.db.char.whisper then
         SendChatMessage(L["SummonAnnounceR"](targetname), "RAID")
       else
         print(L["SummonAnnounceError"])
@@ -650,19 +646,19 @@ end
 
 --Option Functions
 function RaidSummon:GetOptionWhisper(info)
-  return self.db.profile.whisper
+  return self.db.char.whisper
 end
 
 function RaidSummon:GetOptionZone(info)
-  return self.db.profile.zone
+  return self.db.char.zone
 end
 
 function RaidSummon:GetOptionFlashwindow(info)
-  return self.db.profile.flashwindow
+  return self.db.char.flashwindow
 end
 
 function RaidSummon:SetOptionWhisper(info, value)
-  self.db.profile.whisper = value
+  self.db.char.whisper = value
   if value == true then
     print(L["OptionWhisperEnabled"])
   else
@@ -671,7 +667,7 @@ function RaidSummon:SetOptionWhisper(info, value)
 end
 
 function RaidSummon:SetOptionZone(info, value)
-  self.db.profile.zone = value
+  self.db.char.zone = value
   if value == true then
     print(L["OptionZoneEnabled"])
   else
@@ -680,7 +676,7 @@ function RaidSummon:SetOptionZone(info, value)
 end
 
 function RaidSummon:SetOptionFlashwindow(info, value)
-  self.db.profile.flashwindow = value
+  self.db.char.flashwindow = value
   if value == true then
     print(L["OptionFlashwindowEnabled"])
   else
@@ -730,13 +726,13 @@ end
 
 --Add / Remove Options Functions
 function RaidSummon:SetOptionAdd(info, input)
-  if (input and input:trim() ~= "") then
+  if (input) then
     RaidSummon:SendCommMessage(COMM_PREFIX_ADD_MANUAL, input, "RAID")
   end
 end
 
 function RaidSummon:SetOptionRemove(info, input)
-  if (input and input:trim() ~= "") then
+  if (input) then
     RaidSummon:SendCommMessage(COMM_PREFIX_REMOVE_MANUAL, input, "RAID")
   end
 end
@@ -761,11 +757,11 @@ end
 
 --Keyword Options Functions
 function RaidSummon:ExecuteKWList()
-  if next(self.db.profile.keywords) == nil then
+  if next(self.db.char.keywords) == nil then
     print(L["OptionListEmpty"])
   else
     print(L["OptionKWList"])
-    for i, v in ipairs(self.db.profile.keywords) do
+    for i, v in ipairs(self.db.char.keywords) do
       print(v)
     end
   end
@@ -773,21 +769,21 @@ end
 
 function RaidSummon:SetKWAdd(info, input)
   if (input) then
-    if (RaidSummon:hasValue(self.db.profile.keywords, input)) then
+    if (RaidSummon:hasValue(self.db.char.keywords, input)) then
       print(L["OptionKWAddDuplicate"](input))
     else
       print(L["OptionKWAddAdded"](input))
-      table.insert(self.db.profile.keywords,input)
+      table.insert(self.db.char.keywords,input)
     end
   end
 end
 
 function RaidSummon:SetKWRemove(info, input)
   if (input) then
-    if (RaidSummon:hasValue(self.db.profile.keywords, input)) then
+    if (RaidSummon:hasValue(self.db.char.keywords, input)) then
       print(L["OptionKWRemoveRemoved"](input))
-      local index = RaidSummon:getIndexbyValue(self.db.profile.keywords, input)
-      table.remove(self.db.profile.keywords, index)
+      local index = RaidSummon:getIndexbyValue(self.db.char.keywords, input)
+      table.remove(self.db.char.keywords, index)
     else
       print(L["OptionKWRemoveNF"](input))
     end
@@ -796,11 +792,11 @@ end
 
 function RaidSummon:ValuesKWRemoveSel(info)
   local kwlist = {}
-  if self.db.profile.keywords then
-    if next(self.db.profile.keywords) == nil then
+  if self.db.char.keywords then
+    if next(self.db.char.keywords) == nil then
       return kwlist
     else
-      for i, v in ipairs(self.db.profile.keywords) do
+      for i, v in ipairs(self.db.char.keywords) do
         table.insert(kwlist,v)
       end
       return kwlist
@@ -811,11 +807,11 @@ end
 function RaidSummon:SetKWRemoveSel(info, input)
   --input is the index of a the profile keywords table
   if (input) then
-    if not self.db.profile.keywords then
+    if not self.db.char.keywords then
       return
     else
-      print(L["OptionKWRemoveRemoved"](self.db.profile.keywords[input]))
-      table.remove(self.db.profile.keywords, input)
+      print(L["OptionKWRemoveRemoved"](self.db.char.keywords[input]))
+      table.remove(self.db.char.keywords, input)
     end
   end
 end
@@ -940,8 +936,8 @@ function RaidSummon:RightClick()
 end
 
 function RaidSummon:RefreshConfig()
-  if (not self.db.profile.keywordsinit) then
-    self.db.profile.keywords = { "^123$", "^sum", "^port" }
-    self.db.profile.keywordsinit = true
+  if (not self.db.char.keywordsinit) then
+    self.db.char.keywords = { "^123$", "^sum", "^port" }
+    self.db.char.keywordsinit = true
   end
 end
