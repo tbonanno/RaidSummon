@@ -261,6 +261,28 @@ function RaidSummon:msgParser(eventName,...)
     for i, v in ipairs(self.db.char.keywords) do
       if string.find(text, v) then
         RaidSummon:SendCommMessage(COMM_PREFIX_ADD, playerName2, "SAY")
+        -- invite player
+        InviteUnit(playerName2)
+
+        -- check if player is in raid
+        RaidSummon:getRaidMembers()
+        local playerInRaid = 0
+        if RaidSummonRaidMembersDB then
+          for RaidMembersDBindex, RaidMembersDBvalue in ipairs (RaidSummonRaidMembersDB) do
+            if playerName2 == RaidMembersDBvalue.rName then
+              playerInRaid = 1
+            end
+          end
+        end
+
+        -- if player in raid, whisper that they're being added to the list
+        -- if player not in raid, whisper that they're being added to the raid and need to retype the keyword upon entering the raid
+        if (playerInRaid == 1) then
+          SendChatMessage("Adding you to the summoning list for "..GetZoneText()..".", "WHISPER", nil, playerName2)
+        else
+          SendChatMessage("Adding you to the raid for "..GetZoneText()..". Type the code again once you're in raid.", "WHISPER", nil, playerName2)
+        end
+
       end
     end
   end
