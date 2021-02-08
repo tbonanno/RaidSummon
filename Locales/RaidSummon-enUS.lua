@@ -96,21 +96,21 @@ L["OptionClear"] = "|cff9482c9RaidSummon:|r Cleared the summon list"
 --Summon Announce
 --W=Whisper/R=Raid Z=Zone S=Subzone T=Target Player
 L["SummonAnnounceRZS"] = function(T,Z,S)
-	return 'RaidSummon: Summoning ' .. T .. ' to ' .. Z .. ' - ' .. S
+	return 'Summoning ' .. T .. ' to ' .. Z .. ' - ' .. S
 end
 L["SummonAnnounceWZS"] = function(Z,S)
-	return 'RaidSummon: Summoning you to ' .. Z .. ' - ' .. S
+	return 'Summoning you to ' .. Z .. ' - ' .. S
 end
 L["SummonAnnounceRZ"] = function(T,Z,S)
-	return 'RaidSummon: Summoning ' .. T .. ' to ' .. Z
+	return 'Summoning ' .. T .. ' to ' .. Z
 end
 L["SummonAnnounceWZ"] = function(Z,S)
-	return 'RaidSummon: Summoning you to ' .. Z
+	return 'Summoning you to ' .. Z
 end
 L["SummonAnnounceR"] = function(T)
-	return 'RaidSummon: Summoning ' .. T
+	return 'Summoning ' .. T
 end
-L["SummonAnnounceW"] = "RaidSummon: Summoning you"
+L["SummonAnnounceW"] = "Summoning you"
 L["SummonAnnounceError"] = "|cff9482c9RaidSummon:|r Announce error"
 L["NotEnoughMana"] = "|cff9482c9RaidSummon:|r Not enough mana!"
 L["TargetMissmatch"] = function(X,Y)
